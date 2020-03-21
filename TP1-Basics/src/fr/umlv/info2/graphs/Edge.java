@@ -32,11 +32,7 @@ public class Edge {
 
     @Override
     public String toString() {
-        return "Edge{" +
-                "start=" + start +
-                ", end=" + end +
-                ", value=" + value +
-                '}';
+        return start + " -- " + end + " ( " + value + " )";
     }
 
 
