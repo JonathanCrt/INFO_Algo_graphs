@@ -1,14 +1,14 @@
 package fr.umlv.info2.graphs.main;
 
 import fr.umlv.info2.graphs.AdjGraph;
-import fr.umlv.info2.graphs.Graph;
 import fr.umlv.info2.graphs.Graphs;
 import fr.umlv.info2.graphs.MatGraph;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.util.logging.Logger;
 
 public class Main {
+    private static final Logger LOGGER = Logger.getLogger(Main.class.getName());
+
 
     public static void main(String[] args) {
         var numberOfVertices = 4;
@@ -19,9 +19,10 @@ public class Main {
         matGraph.addEdge(1, 3, 6);
         matGraph.addEdge(2, 0, 1);
         matGraph.addEdge(3, 1, 2);
-        
+
         System.out.println(matGraph.toGraphviz());
 
+        /*
         var adjGraph = new AdjGraph(numberOfVertices);
 
         adjGraph.addEdge(0, 1, 1);
@@ -38,5 +39,20 @@ public class Main {
         System.out.println(Graphs.BFS(adjGraph, 0));
 
         System.out.println(Graphs.createRandomGraph(4, 4, 19));
+        */
+        System.out.println(Graphs.timedDepthFirstSearch(matGraph, 0));
+
+        /*
+        try {
+            var path = Paths.get("C:/Users/jonat/Documents/GitHub/INFO_Algo_graphs/TP1-Basics/src/fr/umlv/info2/graphs/graphEx.txt");
+            var matFile = Graphs.createGraphFromMatrixFile(path);
+            LOGGER.info("Graph from file : " + matFile);
+        } catch (IOException e) {
+            LOGGER.info("some IO errors occured");
+        }
+        */
+
+        
+
     }
 }

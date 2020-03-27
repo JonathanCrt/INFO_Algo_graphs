@@ -3,8 +3,8 @@ package fr.umlv.info2.graphs.test;
 import fr.umlv.info2.graphs.MatGraph;
 import org.junit.jupiter.api.Test;
 
-import java.util.NoSuchElementException;
 
+import java.util.NoSuchElementException;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SuppressWarnings("static-method")
@@ -15,10 +15,9 @@ public class MatGraphTest {
         var graph = new MatGraph(50);
     }
 
-
     @Test
-    public void testCreateMatgraphWithInvalidVertexCount() {
-        assertThrows(IllegalArgumentException.class, () -> new MatGraph(-17));
+    public void testCreateMatgraphWithZeroVertexCount() {
+        assertThrows(IllegalArgumentException.class, () -> new MatGraph(0));
     }
 
     @Test
@@ -60,6 +59,15 @@ public class MatGraphTest {
         var graph = new MatGraph(7);
         assertThrows(IllegalArgumentException.class, () -> graph.addEdge(3, 4, 0));
     }
+
+    @Test
+    public void testAddEdgeTwice() {
+        var graph = new MatGraph(7);
+        graph.addEdge(3, 4, 5);
+        graph.addEdge(3, 4, 19);
+        assertEquals(19, graph.getWeight(3, 4));
+    }
+
 
     @Test
     public void testHasEdgeValid() {

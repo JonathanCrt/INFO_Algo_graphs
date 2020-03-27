@@ -12,7 +12,7 @@ public class AdjGraph implements Graph {
     private int numberOfEdges;
 
     public AdjGraph(int n) {
-        if (n <= 0) {
+        if (n == 0) {
             throw new IllegalArgumentException();
         }
         this.adj = new ArrayList<>();

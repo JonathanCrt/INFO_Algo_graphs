@@ -13,10 +13,9 @@ public class AdjGraphTest {
         var graph = new AdjGraph(50);
     }
 
-
     @Test
-    public void testCreateAdjGraphWithInvalidVertexCount() {
-        assertThrows(IllegalArgumentException.class, () -> new AdjGraph(-17));
+    public void testCreateMatgraphWithZeroVertexCount() {
+        assertThrows(IllegalArgumentException.class, () -> new AdjGraph(0));
     }
 
     @Test

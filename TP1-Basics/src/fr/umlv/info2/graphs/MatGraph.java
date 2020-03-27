@@ -11,7 +11,7 @@ public class MatGraph implements Graph {
 
 
     public MatGraph(int numberOfVertices) {
-        if (numberOfVertices <= 0) {
+        if (numberOfVertices == 0) {
             throw new IllegalArgumentException();
         }
         this.mat = new int[numberOfVertices][numberOfVertices];
@@ -47,7 +47,7 @@ public class MatGraph implements Graph {
     public void addEdge(int i, int j, int weight) {
         this.checkEdge(i, j);
         Objects.requireNonNull(weight);
-        if (mat[i][j] != 0 || weight <= 0) {
+        if (weight <= 0) {
             throw new IllegalArgumentException();
         }
         this.mat[i][j] = weight;
@@ -88,25 +88,5 @@ public class MatGraph implements Graph {
             throw new IndexOutOfBoundsException();
         }
         consumer.accept(this.edgeIterator(i).next());
-    }
-
-    @Override
-    public String toGraphviz() {
-        var sb = new StringBuilder();
-        sb.append("digraph  {").append(System.lineSeparator());
-
-        for (var i = 0; i < this.numberOfVertices(); i++) {
-            sb.append(i + ";").append(System.lineSeparator());
-
-            this.edgeIterator(i).forEachRemaining(
-                    edge -> {
-                        var label = "[ label=\"" + edge.getValue() + "\" ]";
-                        sb.append(edge.getStart() + " -> " + edge.getEnd() + " " + label + " ;")
-                                .append(System.lineSeparator());
-                    }
-            );
-        }
-        sb.append("}");
-        return sb.toString();
     }
 }
