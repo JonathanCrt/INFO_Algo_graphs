@@ -12,55 +12,7 @@ public class Graphs {
     public static int START_TIME = 0;
     public static int END_TIME = 1;
     public static int TIMES_VERTEX = 2;
-
-    /**
-     * Parcours en pronfondeur d'un graph :
-     * Algo :
-     * ---
-     * Function DFS : graph , premier sommet v0
-     * <p>
-     * Initilisation d'une pile d'entiers pour retourner les sommets dans l'ordre inverse, et de savoir de quel sommet on va chercher le voisin (LIFO)
-     * Initialisation dune liste pour ce souvenir des sommets déja visités (parcours)
-     * Ajout dans la liste du premier sommet passé en paramétre et de ses arrêtes
-     * <p>
-     * Tant que la pile n'est pas vide, c'est à dire tant que le parcours n'est pas terminé
-     * On dépile les sommets voisins
-     * Ajout à la liste parcours des sommets voisins dans la liste
-     * Pour chaque arrête issue du sommet parcouru :
-     * On récupére le sommet au bout de l'arrête
-     * si la pile ne contient pas les arrêtes de ce sommet voisin et si  celui-ci n'est pas dans la liste:
-     * On insére dans la pile
-     * Fin Si
-     * Fin de Boucle
-     * Fin de Boucle
-     * Retourne la liste contenant les sommets du parcours
-     * Fin de fonction
-     *
-     * @param graph
-     * @param v0
-     * @return liste de mon parcours (sommets visités)
-     */
-    public static List<Integer> DFSWithStack(Graph graph, int v0) {
-
-        var stack = new Stack<Integer>();
-        var parcours = new ArrayList<Integer>();
-
-        parcours.add(v0);
-        graph.forEachEdge(v0, edge -> stack.add(edge.getEnd()));
-
-        while (!stack.isEmpty()) {
-            var st = stack.pop();
-            parcours.add(st);
-
-            graph.forEachEdge(st, edge -> {
-                var target = edge.getEnd();
-                if (!parcours.contains(target) && !stack.contains(target)) {
-                    stack.add(target);
-                }
-            });
-        }
-        return parcours;
-    }
+    public static int PLUS_INFINITE = Integer.MAX_VALUE;
 
     /**
      * Méthode récursif Depth First Search
@@ -255,13 +207,13 @@ public class Graphs {
         var numberOfVertices = g.numberOfVertices();
         var visited = new boolean[numberOfVertices];
 
-        for(var vertex = 0; vertex < numberOfVertices; vertex++) {
+        for (var vertex = 0; vertex < numberOfVertices; vertex++) {
             visited[vertex] = false;
         }
-        var parcours  = new ArrayList<Integer>();
+        var parcours = new ArrayList<Integer>();
 
-        for(var vertex = 0; vertex < numberOfVertices; vertex++) {
-            if(!visited[vertex]) {
+        for (var vertex = 0; vertex < numberOfVertices; vertex++) {
+            if (!visited[vertex]) {
                 topologicalSortRec(g, vertex, visited, parcours, new ArrayList<>(), cycleDetect);
             }
         }
@@ -270,8 +222,8 @@ public class Graphs {
 
 
     /**
-     * to detect cycle --> add list of ancestors  of the current node in parameter
-     * add ancestors after visited[true]
+     *
+     *
      * @param g
      * @param vertex
      * @param visited
@@ -282,11 +234,11 @@ public class Graphs {
         ancestorsVertices.add(vertex);
 
         g.forEachEdge(vertex, v -> {
-            if(!visited[vertex]) {
+            if (!visited[vertex]) {
                 topologicalSortRec(g, v.getEnd(), visited, parcours, ancestorsVertices, cycleDetect);
             } else {
-                if(ancestorsVertices.contains(v.getEnd())) {
-                    if(cycleDetect) {
+                if (ancestorsVertices.contains(v.getEnd())) {
+                    if (cycleDetect) {
                         throw new IllegalStateException("Warning : The graph have a cycle");
                     }
                 }
@@ -296,6 +248,73 @@ public class Graphs {
         System.out.println(ancestorsVertices);
         ancestorsVertices.remove(Integer.valueOf(vertex));
         parcours.add(vertex);
+    }
+
+    /**
+     * implementation de l'algorithme de kosaraju
+     * @param g graph donné
+     * @return Composantes fortement connexe
+     */
+    public static List<List<Integer>> scc(Graph g) {
+        var kosarajuParcours = new ArrayList<List<Integer>>();
+
+        var vertices = topologicalSort(g, false);
+        var numberOfVertices = vertices.size();
+        var transposedGraph = g.transpose();
+        var visited = new boolean[numberOfVertices];
+
+        for (var vertex : vertices) {
+            if (!visited[vertex]) {
+                var secondParcours = new ArrayList<Integer>();
+                DFS_Rec(transposedGraph, vertex, visited, secondParcours, new int[numberOfVertices][TIMES_VERTEX], new LongAdder());
+                kosarajuParcours.add(secondParcours);
+            }
+        }
+        return kosarajuParcours;
+    }
+
+    /**
+     * implementation de l'algorithme de bellman-ford
+     * @param g graph donnée
+     * @param source sommet de départ
+     * @return plus court chemin depuis le sommet de départ
+     */
+    public static ShortestPathFromOneVertex bellmanFord(Graph g, int source) {
+        var d = new int[g.numberOfVertices()];
+        var pi = new int[g.numberOfVertices()];
+        var numberOfVertices = g.numberOfVertices();
+
+        for (var index = 0; index < numberOfVertices; index++) {
+            d[index] = PLUS_INFINITE;
+            pi[index] = PLUS_INFINITE;
+        }
+        d[source] = 0;
+        pi[source] = source;
+
+        for (var i = 0; i < numberOfVertices; i++) {
+            for (var vertex = 0; vertex < numberOfVertices; vertex++) {
+                g.forEachEdge(vertex, edge -> {
+                    var weight = edge.getValue();
+                    var target = edge.getEnd();
+
+                    if (d[target] > d[edge.getStart()] + weight) {
+                        d[target] = d[edge.getStart()] + weight;
+                        pi[target] = edge.getStart();
+                    }
+                });
+            }
+        }
+        for (var vertex = 0; vertex < g.numberOfVertices(); vertex++) {
+            g.forEachEdge(vertex, edge -> {
+                var weight = edge.getValue();
+                var target = edge.getEnd();
+                if (d[target] > d[edge.getStart()] + weight) {
+                    throw new IllegalArgumentException("Error: Graph given have negative circle");
+                }
+
+            });
+        }
+        return new ShortestPathFromOneVertex(source, d, pi);
     }
 
 

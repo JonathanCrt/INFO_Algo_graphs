@@ -85,4 +85,19 @@ public interface Graph {
         sb.append("}");
         return sb.toString();
     }
+
+    /**
+     * Inverse les arrêtes du graphe
+     * @return graph transposé
+     */
+    default Graph transpose() {
+        var graph = this;
+        var numberOfVertices = graph.numberOfVertices();
+        var matGraph = new MatGraph(numberOfVertices);
+
+        for (var vertex = 0; vertex < numberOfVertices; vertex++) {
+            graph.forEachEdge(vertex, edge -> matGraph.addEdge(edge.getEnd(), edge.getStart(), edge.getValue()));
+        }
+        return graph;
+    }
 }

@@ -36,7 +36,7 @@ public class GraphsPathTest {
         adjGraph.addEdge(2, 0, 1);
         adjGraph.addEdge(3, 1, 2);
 
-        assertEquals(List.of(0, 1, 2, 3), Graphs.BFS(adjGraph , 0));
+        assertEquals(List.of(0, 1, 2, 3), Graphs.BFS(adjGraph, 0));
     }
 
 
@@ -58,7 +58,7 @@ public class GraphsPathTest {
         matGraph.addEdge(5, 0, 1);
 
         matGraph.toGraphviz();
-        assertEquals("[[0, 11], [1, 2], [3, 10], [12, 17], [4, 9], [6, 7], [5, 8], [13, 16], [14, 15]]" , Arrays.deepToString(Graphs.timedDepthFirstSearch(matGraph, 0)));
+        assertEquals("[[0, 11], [1, 2], [3, 10], [12, 17], [4, 9], [6, 7], [5, 8], [13, 16], [14, 15]]", Arrays.deepToString(Graphs.timedDepthFirstSearch(matGraph, 0)));
     }
 
 
@@ -84,13 +84,13 @@ public class GraphsPathTest {
         adjGraph2.addEdge(3, 1, 2);
 
 
-        assertEquals(List.of(0, 1, 2, 3, 4), Graphs.topologicalSort(matGraph , false));
+        assertEquals(List.of(0, 1, 2, 3, 4), Graphs.topologicalSort(matGraph, false));
         assertEquals(List.of(0, 1, 2, 3, 4), Graphs.topologicalSort(adjGraph, true));
         assertEquals(List.of(0, 1, 2, 3), Graphs.topologicalSort(adjGraph2, true));
     }
 
     @Test
-    void testSCC(){
+    void testSCC() {
         var kosaraju = new MatGraph(9);
         kosaraju.addEdge(0, 1, 1);
         kosaraju.addEdge(0, 2, 2);
@@ -105,12 +105,23 @@ public class GraphsPathTest {
         kosaraju.addEdge(7, 8, 15);
         kosaraju.addEdge(8, 3, 11);
 
-        // [3, 7, 8] ; [0, 2, 4, 5, 6] ; [1]
+        // [0, 2, 4, 5, 6]  ; [3, 7, 8]; [1]
+        assertEquals(List.of(List.of(0, 1, 2, 4, 6, 5), List.of(3, 7, 8)), Graphs.scc(kosaraju));
 
     }
 
+    @Test
+    void testBellmanFord() {
 
-
-
+        var matGraph = new MatGraph(5);
+        matGraph.addEdge(0, 1, 2);
+        matGraph.addEdge(0, 2, 5);
+        matGraph.addEdge(1, 2, 1);
+        matGraph.addEdge(1, 4, 4);
+        matGraph.addEdge(2, 3, 4);
+        matGraph.addEdge(2, 4, 2);
+        matGraph.addEdge(3, 2, 2);
+        assertEquals("0 [0, 2, 3, 7, 5] [0, 0, 1, 2, 2]", Graphs.bellmanFord(matGraph, 0).toString());
+    }
 
 }
