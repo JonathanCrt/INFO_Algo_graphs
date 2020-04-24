@@ -108,15 +108,6 @@ public class AdjGraphTest {
     }
 
     @Test
-    public void testNeighborsOutOfRange() {
-        var graph = new AdjGraph(6);
-        assertAll(
-                () -> assertThrows(IndexOutOfBoundsException.class, () -> graph.edgeIterator(10)),
-                () -> assertThrows(IndexOutOfBoundsException.class, () -> graph.edgeIterator(-2))
-        );
-    }
-
-    @Test
     public void testNeighborsEmptyNext() {
         var graph = new AdjGraph(6);
         assertThrows(NoSuchElementException.class, () -> graph.edgeIterator(0).next());

@@ -1,9 +1,6 @@
 package fr.umlv.info2.graphs;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Consumer;
 
 public class AdjGraph implements Graph {
@@ -79,12 +76,12 @@ public class AdjGraph implements Graph {
 
     @Override
     public Iterator<Edge> edgeIterator(int i) {
-        return adj.get(i).iterator();
+        return adj.stream().flatMap(Collection::stream).filter(edge -> isEdge(i, edge.getEnd())).iterator();
     }
 
     @Override
     public void forEachEdge(int i, Consumer<Edge> consumer) {
-        adj.get(i).forEach(consumer);
+        edgeIterator(i).forEachRemaining(consumer);
     }
 
     @Override

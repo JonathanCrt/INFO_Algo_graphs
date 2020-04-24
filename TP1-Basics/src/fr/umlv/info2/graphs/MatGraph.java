@@ -87,6 +87,6 @@ public class MatGraph implements Graph {
         if (i >= numberOfVertices) {
             throw new IndexOutOfBoundsException();
         }
-        consumer.accept(this.edgeIterator(i).next());
+        edgeIterator(i).forEachRemaining(consumer);
     }
 }

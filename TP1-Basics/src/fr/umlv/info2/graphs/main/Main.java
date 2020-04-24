@@ -11,6 +11,7 @@ public class Main {
 
 
     public static void main(String[] args) {
+        /*
         var numberOfVertices = 4;
         var matGraph = new MatGraph(numberOfVertices);
 
@@ -21,7 +22,7 @@ public class Main {
         matGraph.addEdge(3, 1, 2);
 
         System.out.println(matGraph.toGraphviz());
-
+        */
         /*
         var adjGraph = new AdjGraph(numberOfVertices);
 
@@ -40,7 +41,7 @@ public class Main {
 
         System.out.println(Graphs.createRandomGraph(4, 4, 19));
         */
-        System.out.println(Graphs.timedDepthFirstSearch(matGraph, 0));
+        //System.out.println(Graphs.timedDepthFirstSearch(matGraph, 0));
 
         /*
         try {
@@ -51,6 +52,22 @@ public class Main {
             LOGGER.info("some IO errors occured");
         }
         */
+
+        var matGraph = new MatGraph(9);
+        matGraph.addEdge(0, 1, 1);
+        matGraph.addEdge(0, 2, 1);
+        matGraph.addEdge(2, 1, 1);
+        matGraph.addEdge(2, 4, 1);
+        matGraph.addEdge(3, 2, 1);
+        matGraph.addEdge(8, 3, 1);
+        matGraph.addEdge(3, 7, 1);
+        matGraph.addEdge(7, 8, 1);
+        matGraph.addEdge(4, 6, 1);
+        matGraph.addEdge(6, 5, 1);
+        matGraph.addEdge(5, 4, 1);
+        matGraph.addEdge(5, 0, 1);
+
+        System.out.println(matGraph.toGraphviz());
 
         
 

@@ -110,7 +110,7 @@ public class Graphs {
 
 
     /**
-     * Logique du parcours en largeur d'un graph avec une file
+     * Logique du parcours en largeur d'un graph
      *
      * @param graph    Un graph quelconque
      * @param parcours Liste du parcours
@@ -131,7 +131,7 @@ public class Graphs {
     }
 
     /**
-     * Parcours en largeur d'un graph avec une file
+     * Parcours en largeur d'un graph
      *
      * @param graph graph quelconque
      * @param v0    sommet initial
@@ -231,7 +231,7 @@ public class Graphs {
         var visited = new boolean[numberOfVertices];
         var arrayOfVerticesTimed = new int[numberOfVertices][TIMES_VERTEX];
         var currentTimeStep = new LongAdder(); // to make sure thread safe
-
+        currentTimeStep.decrement();
         for (var vertex = v0; vertex < numberOfVertices; vertex++) {
             DFS_Rec(graph, vertex, visited, new LinkedList<>(), arrayOfVerticesTimed, currentTimeStep);
         }
@@ -240,6 +240,62 @@ public class Graphs {
         }
         System.out.println("Array of vertices timed : " + Arrays.deepToString(arrayOfVerticesTimed));
         return arrayOfVerticesTimed;
+    }
+
+
+
+
+    /*
+    public static List<Integer> topologicalSort(Graph g) {
+        return topologicalSort(g, () -> {});
+    }
+     */
+
+    public static List<Integer> topologicalSort(Graph g, boolean cycleDetect) {
+        var numberOfVertices = g.numberOfVertices();
+        var visited = new boolean[numberOfVertices];
+
+        for(var vertex = 0; vertex < numberOfVertices; vertex++) {
+            visited[vertex] = false;
+        }
+        var parcours  = new ArrayList<Integer>();
+
+        for(var vertex = 0; vertex < numberOfVertices; vertex++) {
+            if(!visited[vertex]) {
+                topologicalSortRec(g, vertex, visited, parcours, new ArrayList<>(), cycleDetect);
+            }
+        }
+        return parcours;
+    }
+
+
+    /**
+     * to detect cycle --> add list of ancestors  of the current node in parameter
+     * add ancestors after visited[true]
+     * @param g
+     * @param vertex
+     * @param visited
+     * @param parcours
+     */
+    public static void topologicalSortRec(Graph g, int vertex, boolean[] visited, List<Integer> parcours, List<Integer> ancestorsVertices, boolean cycleDetect) {
+        visited[vertex] = true;
+        ancestorsVertices.add(vertex);
+
+        g.forEachEdge(vertex, v -> {
+            if(!visited[vertex]) {
+                topologicalSortRec(g, v.getEnd(), visited, parcours, ancestorsVertices, cycleDetect);
+            } else {
+                if(ancestorsVertices.contains(v.getEnd())) {
+                    if(cycleDetect) {
+                        throw new IllegalStateException("Warning : The graph have a cycle");
+                    }
+                }
+            }
+        });
+
+        System.out.println(ancestorsVertices);
+        ancestorsVertices.remove(Integer.valueOf(vertex));
+        parcours.add(vertex);
     }
 
 
