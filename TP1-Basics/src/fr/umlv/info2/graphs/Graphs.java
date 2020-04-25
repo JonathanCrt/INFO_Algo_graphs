@@ -194,9 +194,6 @@ public class Graphs {
         return arrayOfVerticesTimed;
     }
 
-
-
-
     /*
     public static List<Integer> topologicalSort(Graph g) {
         return topologicalSort(g, () -> {});
@@ -207,17 +204,20 @@ public class Graphs {
         var numberOfVertices = g.numberOfVertices();
         var visited = new boolean[numberOfVertices];
 
-        for (var vertex = 0; vertex < numberOfVertices; vertex++) {
-            visited[vertex] = false;
-        }
-        var parcours = new ArrayList<Integer>();
+        var parcours = new Stack<Integer>();
 
         for (var vertex = 0; vertex < numberOfVertices; vertex++) {
             if (!visited[vertex]) {
                 topologicalSortRec(g, vertex, visited, parcours, new ArrayList<>(), cycleDetect);
             }
         }
-        return parcours;
+        var result  = new ArrayList<Integer>();
+        while(!parcours.isEmpty()){
+            var t = parcours.pop();
+            result.add(t);
+        }
+
+        return result;
     }
 
 
@@ -229,12 +229,12 @@ public class Graphs {
      * @param visited
      * @param parcours
      */
-    public static void topologicalSortRec(Graph g, int vertex, boolean[] visited, List<Integer> parcours, List<Integer> ancestorsVertices, boolean cycleDetect) {
+    public static void topologicalSortRec(Graph g, int vertex, boolean[] visited, Stack<Integer> parcours, List<Integer> ancestorsVertices, boolean cycleDetect) {
         visited[vertex] = true;
         ancestorsVertices.add(vertex);
 
         g.forEachEdge(vertex, v -> {
-            if (!visited[vertex]) {
+            if (!visited[v.getEnd()]) {
                 topologicalSortRec(g, v.getEnd(), visited, parcours, ancestorsVertices, cycleDetect);
             } else {
                 if (ancestorsVertices.contains(v.getEnd())) {
@@ -247,7 +247,7 @@ public class Graphs {
 
         System.out.println(ancestorsVertices);
         ancestorsVertices.remove(Integer.valueOf(vertex));
-        parcours.add(vertex);
+        parcours.push(vertex);
     }
 
     /**

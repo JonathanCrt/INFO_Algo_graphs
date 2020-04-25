@@ -53,6 +53,7 @@ public class Main {
         }
         */
 
+        /*
         var matGraph = new MatGraph(9);
         matGraph.addEdge(0, 1, 1);
         matGraph.addEdge(0, 2, 1);
@@ -68,6 +69,16 @@ public class Main {
         matGraph.addEdge(5, 0, 1);
 
         System.out.println(matGraph.toGraphviz());
+
+
+         */
+        var matGraph = new MatGraph(5);
+        matGraph.addEdge(0, 1, 1);
+        matGraph.addEdge(0, 4, 1);
+        matGraph.addEdge(1, 2, 1);
+        matGraph.addEdge(1, 3, 1);
+
+        System.out.println(Graphs.topologicalSort(matGraph, false));
 
         
 

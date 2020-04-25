@@ -14,7 +14,7 @@ public class GraphsPathTest {
 
 
     @Test
-    void testDFS() {
+    public void testDFS() {
         AdjGraph adjGraph = new AdjGraph(4);
 
         adjGraph.addEdge(0, 1, 1);
@@ -26,9 +26,25 @@ public class GraphsPathTest {
         assertEquals(List.of(0, 1, 2, 3), Graphs.DFS(adjGraph, 0));
     }
 
+    @Test
+    public void testDFS2() {
+        var matGraph = new MatGraph(5);
+        matGraph.addEdge(0, 2, 4);
+        matGraph.addEdge(0, 3, 2);
+        matGraph.addEdge(2, 0, 7);
+        matGraph.addEdge(2, 1, 8);
+        matGraph.addEdge(2, 2, 5);
+        matGraph.addEdge(4, 0, 3);
+        matGraph.addEdge(0, 4, 3);
+        matGraph.addEdge(1, 1, 7);
+        matGraph.addEdge(4, 2, 2);
+        matGraph.addEdge(4, 3, 6);
+        assertEquals(List.of(1, 2, 0, 3, 4), Graphs.DFS(matGraph, 1));
+    }
+
 
     @Test
-    void testBFS() {
+    public void testBFS() {
         AdjGraph adjGraph = new AdjGraph(4);
         adjGraph.addEdge(0, 1, 1);
         adjGraph.addEdge(1, 2, 3);
@@ -41,7 +57,24 @@ public class GraphsPathTest {
 
 
     @Test
-    void testTimedDFS() {
+    public void testBFS2() {
+        var matGraph = new MatGraph(5);
+        matGraph.addEdge(0, 3, 1);
+        matGraph.addEdge(2, 3, 5);
+        matGraph.addEdge(3, 0, 10);
+        matGraph.addEdge(0, 4, 2);
+        matGraph.addEdge(1, 1, 6);
+        matGraph.addEdge(2, 4, 8);
+        matGraph.addEdge(1, 4, 8);
+        matGraph.addEdge(2, 0, 22);
+        matGraph.addEdge(2, 2, 17);
+        matGraph.addEdge(4, 4, 5);
+        assertEquals(List.of(3, 0, 4), Graphs.BFS(matGraph, 3));
+    }
+
+
+    @Test
+    public void testTimedDFS() {
 
         var matGraph = new MatGraph(9);
         matGraph.addEdge(0, 1, 1);
@@ -61,9 +94,8 @@ public class GraphsPathTest {
         assertEquals("[[0, 11], [1, 2], [3, 10], [12, 17], [4, 9], [6, 7], [5, 8], [13, 16], [14, 15]]", Arrays.deepToString(Graphs.timedDepthFirstSearch(matGraph, 0)));
     }
 
-
     @Test
-    void testTopologicalSort() {
+    public void testTopologicalSort() {
         var matGraph = new MatGraph(5);
         matGraph.addEdge(0, 1, 1);
         matGraph.addEdge(0, 4, 1);
@@ -84,13 +116,30 @@ public class GraphsPathTest {
         adjGraph2.addEdge(3, 1, 2);
 
 
-        assertEquals(List.of(0, 1, 2, 3, 4), Graphs.topologicalSort(matGraph, false));
-        assertEquals(List.of(0, 1, 2, 3, 4), Graphs.topologicalSort(adjGraph, true));
-        assertEquals(List.of(0, 1, 2, 3), Graphs.topologicalSort(adjGraph2, true));
+        assertEquals(List.of(0, 4, 1, 3, 2), Graphs.topologicalSort(matGraph, false));
+        assertEquals(List.of(0, 4, 1, 3, 2), Graphs.topologicalSort(adjGraph, true));
+        assertThrows(IllegalStateException.class, () -> Graphs.topologicalSort(adjGraph2, true));
     }
 
     @Test
-    void testSCC() {
+    public void testTopologicalSort2() {
+        var matGraph = new MatGraph(5);
+        matGraph.addEdge(2, 0, 4);
+        matGraph.addEdge(4, 1, 5);
+        matGraph.addEdge(4, 3, 9);
+        matGraph.addEdge(2, 1, 12);
+        matGraph.addEdge(2, 3, 17);
+        matGraph.addEdge(3, 3, 4);
+        matGraph.addEdge(0, 1, 7);
+        matGraph.addEdge(1, 4, 2);
+        matGraph.addEdge(3, 4, 2);
+        matGraph.addEdge(4, 4, 7);
+        assertEquals(List.of(2, 0, 1, 4, 3), Graphs.topologicalSort(matGraph, false));
+    }
+
+
+    @Test
+    public void testSCC() {
         var kosaraju = new MatGraph(9);
         kosaraju.addEdge(0, 1, 1);
         kosaraju.addEdge(0, 2, 2);
@@ -105,13 +154,30 @@ public class GraphsPathTest {
         kosaraju.addEdge(7, 8, 15);
         kosaraju.addEdge(8, 3, 11);
 
-        // [0, 2, 4, 5, 6]  ; [3, 7, 8]; [1]
-        assertEquals(List.of(List.of(0, 1, 2, 4, 6, 5), List.of(3, 7, 8)), Graphs.scc(kosaraju));
+        // [3, 7, 8];  [0, 2, 4, 5, 6] ; [1]
+        assertEquals(List.of(List.of(3, 8, 7), List.of(0, 5, 6, 4, 2), List.of(1)), Graphs.scc(kosaraju));
 
     }
 
     @Test
-    void testBellmanFord() {
+    public void testSCC2() {
+        var kosaraju = new MatGraph(5);
+        kosaraju.addEdge(0, 0, 1);
+        kosaraju.addEdge(1, 0, 3);
+        kosaraju.addEdge(2, 3, 4);
+        kosaraju.addEdge(2, 4, 3);
+        kosaraju.addEdge(1, 3, 5);
+        kosaraju.addEdge(2, 0, 3);
+        kosaraju.addEdge(2, 2, 4);
+        kosaraju.addEdge(3, 0, 4);
+        kosaraju.addEdge(3, 2, 5);
+        kosaraju.addEdge(4, 4, 7);
+        assertEquals(List.of(List.of(1), List.of(3, 2), List.of(4), List.of(0)), Graphs.scc(kosaraju));
+    }
+
+
+    @Test
+    public void testBellmanFord() {
 
         var matGraph = new MatGraph(5);
         matGraph.addEdge(0, 1, 2);
@@ -121,6 +187,7 @@ public class GraphsPathTest {
         matGraph.addEdge(2, 3, 4);
         matGraph.addEdge(2, 4, 2);
         matGraph.addEdge(3, 2, 2);
+
         assertEquals("0 [0, 2, 3, 7, 5] [0, 0, 1, 2, 2]", Graphs.bellmanFord(matGraph, 0).toString());
     }
 

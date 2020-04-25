@@ -98,6 +98,6 @@ public interface Graph {
         for (var vertex = 0; vertex < numberOfVertices; vertex++) {
             graph.forEachEdge(vertex, edge -> matGraph.addEdge(edge.getEnd(), edge.getStart(), edge.getValue()));
         }
-        return graph;
+        return matGraph;
     }
 }
