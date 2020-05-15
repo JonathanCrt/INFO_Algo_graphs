@@ -90,8 +90,8 @@ public class Graphs {
      * @return liste du parcours
      */
     public static List<Integer> BFS(Graph graph, int v0) {
-        var numberOfVertices = graph.numberOfVertices(); // Nombre de sommets du graph
-        var queue = new ArrayDeque<Integer>(numberOfVertices); // File
+        var numberOfVertices = graph.numberOfVertices(); // bumber of vertices (graph)
+        var queue = new ArrayDeque<Integer>(numberOfVertices); // queue
         var parcours = new ArrayList<Integer>(); // Liste parcorus avec les sommets visité
         var visited = new boolean[numberOfVertices]; // Tableau de  boolean pour indiquer  les sommets visités
 
@@ -211,8 +211,8 @@ public class Graphs {
                 topologicalSortRec(g, vertex, visited, parcours, new ArrayList<>(), cycleDetect);
             }
         }
-        var result  = new ArrayList<Integer>();
-        while(!parcours.isEmpty()){
+        var result = new ArrayList<Integer>();
+        while (!parcours.isEmpty()) {
             var t = parcours.pop();
             result.add(t);
         }
@@ -222,8 +222,6 @@ public class Graphs {
 
 
     /**
-     *
-     *
      * @param g
      * @param vertex
      * @param visited
@@ -252,6 +250,7 @@ public class Graphs {
 
     /**
      * implementation de l'algorithme de kosaraju
+     *
      * @param g graph donné
      * @return Composantes fortement connexe
      */
@@ -275,13 +274,14 @@ public class Graphs {
 
     /**
      * implementation de l'algorithme de bellman-ford
-     * @param g graph donnée
+     *
+     * @param g      graph donnée
      * @param source sommet de départ
      * @return plus court chemin depuis le sommet de départ
      */
     public static ShortestPathFromOneVertex bellmanFord(Graph g, int source) {
         var d = new int[g.numberOfVertices()];
-        var pi = new int[g.numberOfVertices()];
+        var pi = new Integer[g.numberOfVertices()];
         var numberOfVertices = g.numberOfVertices();
 
         for (var index = 0; index < numberOfVertices; index++) {
@@ -317,5 +317,76 @@ public class Graphs {
         return new ShortestPathFromOneVertex(source, d, pi);
     }
 
+    /**
+     * implementation de l'algorithme de dijktra
+     *
+     * @param g      graph donnée
+     * @param source sommet de départ
+     * @return plus court chemin depuis le sommet de départ
+     */
+    public static ShortestPathFromOneVertex dijkstra(Graph g, int source) {
 
+        var numberOfVertices = g.numberOfVertices();
+        var d = new int[numberOfVertices];
+        var pi = new Integer[numberOfVertices];
+        var todoVertices = new PriorityQueue<Integer>();
+
+        // intialization of d and pi for each vertices
+        for (var s = 0; s < numberOfVertices; s++) {
+            d[s] = PLUS_INFINITE;
+            pi[s] = null;
+            todoVertices.add(s);
+        }
+        d[source] = 0;
+        while (!todoVertices.isEmpty()) {
+
+            var s = todoVertices.poll();
+            g.forEachEdge(s, edge ->
+            {
+                var target = edge.getEnd();
+                var weight = edge.getValue();
+                if (d[s] + weight < d[target]) {
+                    d[target] = d[s] + weight;
+                    pi[target] = s;
+                }
+            });
+        }
+        return new ShortestPathFromOneVertex(source, d, pi);
+    }
+
+
+    public static ShortestPathFromAllVertices floydWarshall(Graph g) {
+        var numberOfVertices = g.numberOfVertices();
+        var d = new int[numberOfVertices][numberOfVertices];
+        var pi = new int[numberOfVertices][numberOfVertices];
+
+        for (var s = 0; s < numberOfVertices; s++) {
+            for (var t = 0; t < numberOfVertices; t++) {
+                if (s == t & g.isEdge(s, t)) {
+                    d[s][t] = 0;
+                    pi[s][t] = -1;
+                } else if (g.isEdge(s, t)) {
+                    d[s][t] = g.getWeight(s, t);
+                    pi[s][t] = -1;
+                } else {
+                    d[s][t] = PLUS_INFINITE;
+                    pi[s][t] = -1;
+                }
+
+            }
+        }
+
+        for (var k = 0; k < numberOfVertices - 1; k++) {
+            for (var s = 0; s < numberOfVertices; s++) {
+                for (var t = 0; t < numberOfVertices; t++) {
+                    if (d[s][t] > d[s][k] + d[k][t]) {
+                        d[s][t] = d[s][k] + d[k][t];
+                        pi[s][t] = pi[k][t];
+                    }
+                }
+            }
+        }
+        return new ShortestPathFromAllVertices(d, pi);
+
+    }
 }

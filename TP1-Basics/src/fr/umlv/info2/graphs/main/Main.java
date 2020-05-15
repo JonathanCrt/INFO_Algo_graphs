@@ -1,6 +1,7 @@
 package fr.umlv.info2.graphs.main;
 
 import fr.umlv.info2.graphs.AdjGraph;
+import fr.umlv.info2.graphs.Graph;
 import fr.umlv.info2.graphs.Graphs;
 import fr.umlv.info2.graphs.MatGraph;
 
@@ -70,8 +71,6 @@ public class Main {
 
         System.out.println(matGraph.toGraphviz());
 
-
-         */
         var matGraph = new MatGraph(5);
         matGraph.addEdge(0, 1, 1);
         matGraph.addEdge(0, 4, 1);
@@ -79,8 +78,26 @@ public class Main {
         matGraph.addEdge(1, 3, 1);
 
         System.out.println(Graphs.topologicalSort(matGraph, false));
+        */
+        var adjGraph = new AdjGraph(10);
 
-        
+        adjGraph.addEdge(0, 1, 1);
+        adjGraph.addEdge(1, 2, 3);
+        adjGraph.addEdge(1, 3, 6);
+        adjGraph.addEdge(2, 8, 1);
+        adjGraph.addEdge(3, 8, 2);
 
+        System.out.println(Graphs.dijkstra(adjGraph, 0));
+
+
+        var matGraph = new MatGraph(4);
+        matGraph.addEdge(0, 1, 8);
+        matGraph.addEdge(1, 2, 1);
+        matGraph.addEdge(2, 0, 4);
+        matGraph.addEdge(2, 1, 5);
+        matGraph.addEdge(3, 1, 2);
+        matGraph.addEdge(3, 2, 9);
+
+        System.out.println(Graphs.floydWarshall(matGraph));
     }
 }

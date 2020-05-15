@@ -3,6 +3,7 @@ package fr.umlv.info2.graphs.test;
 import fr.umlv.info2.graphs.AdjGraph;
 import fr.umlv.info2.graphs.Graphs;
 import fr.umlv.info2.graphs.MatGraph;
+import fr.umlv.info2.graphs.ShortestPathFromOneVertex;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -189,6 +190,40 @@ public class GraphsPathTest {
         matGraph.addEdge(3, 2, 2);
 
         assertEquals("0 [0, 2, 3, 7, 5] [0, 0, 1, 2, 2]", Graphs.bellmanFord(matGraph, 0).toString());
+    }
+
+    // dont't forget to test negative circle
+
+
+    @Test
+    public void testDijkstra() {
+
+        var matGraph = new MatGraph(5);
+        matGraph.addEdge(0, 1, 8); // A -> B : 8
+        matGraph.addEdge(0, 2, 2); // A -> C : 2
+        matGraph.addEdge(1, 3, 2); // B -> D : 2
+        matGraph.addEdge(2, 1, 5); // C -> B : 5
+        matGraph.addEdge(2, 4, 2); // C -> E : 2
+        matGraph.addEdge(4, 1, 3); // E -> B : 3
+        matGraph.addEdge(4, 3, 8); // E -> D : 8
+
+        assertEquals("0 [0, 7, 2, 10, 4] [null, 2, 0, 1, 2]", Graphs.dijkstra(matGraph, 0).toString());
+    }
+
+
+    @Test
+    public void testFloydWarshall() {
+        var matGraph = new MatGraph(4);
+        matGraph.addEdge(0, 1, 8);
+        matGraph.addEdge(1, 2, 1);
+        matGraph.addEdge(2, 0, 4);
+        matGraph.addEdge(2, 1, 5);
+        matGraph.addEdge(3, 1, 2);
+        matGraph.addEdge(3, 2, 9);
+
+        assertEquals("[0, 3, 4, 1] [5, 0, 1, 6] [4, 7, 0, 5] [7, 2, 3, 0]"+
+                " [0, 3, 3, 0] [2, 1, 1, 2] [2, 3, 2, 0] [2, 3, 2, 3]",
+                Graphs.floydWarshall(matGraph).toString());
     }
 
 }
