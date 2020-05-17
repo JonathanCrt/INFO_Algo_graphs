@@ -15,13 +15,13 @@ public class Graphs {
     public static int PLUS_INFINITE = Integer.MAX_VALUE;
 
     /**
-     * Méthode récursif Depth First Search
+     * Recursive method Depth First Search
      *
-     * @param graph           Un graph quelconque orienté
-     * @param vertex          sommet indiqué
-     * @param visited         Pour indiquer les sommets déja visités
-     * @param parcours        Liste des sommets parcourus
-     * @param values          Tableau de valeurs contenant le numéro du sommet et son temps de début de visite et de fin.
+     * @param graph           any graph oriented
+     * @param vertex          indicated vertex
+     * @param visited         array of boolean to indicate vertices already visited
+     * @param parcours        resulting list (vertices)
+     * @param values          A table of values containing the vertex number and its start and end time.
      * @param currentTimeStep temps de parcours
      */
     public static void DFS_Rec(Graph graph, int vertex, boolean[] visited, List<Integer> parcours, int[][] values, LongAdder currentTimeStep) {
@@ -29,30 +29,30 @@ public class Graphs {
             return;
         }
         currentTimeStep.increment();
-        visited[vertex] = true; // Le sommet est visité
-        parcours.add(vertex); // Ajout au parcours du sommet visité
-        values[vertex][START_TIME] = currentTimeStep.intValue(); // Visite du sommet en cours = Bleu
-        graph.forEachEdge(vertex, edge -> DFS_Rec(graph, edge.getEnd(), visited, parcours, values, currentTimeStep)); // appel rec.
-        currentTimeStep.increment(); //Incrémentation du temps
-        values[vertex][END_TIME] = currentTimeStep.intValue(); // Fin de la visite du sommet = Rouge
+        visited[vertex] = true; // vertex is visited
+        parcours.add(vertex); // Added to the path of the visited vertices
+        values[vertex][START_TIME] = currentTimeStep.intValue(); // Ongoing vertex visit
+        graph.forEachEdge(vertex, edge -> DFS_Rec(graph, edge.getEnd(), visited, parcours, values, currentTimeStep)); // rec. call
+        currentTimeStep.increment(); //Time increment
+        values[vertex][END_TIME] = currentTimeStep.intValue(); // End of vertex visit
     }
 
     /**
-     * Méthode DFS avec boucle principale
+     * DFS method with main loop
      *
-     * @param graph Un graph quelconque orienté
-     * @param v0    sommet initial
-     * @return liste contenant les sommet parcourus
+     * @param graph any graph oriented
+     * @param v0    initial vertex
+     * @return list containing visited vertices
+     * improvement : initialize all values of vertices array with -1
      */
     public static List<Integer> DFS(Graph graph, int v0) {
         var numberOfVertices = graph.numberOfVertices();
         var visited = new boolean[numberOfVertices];
         var parcours = new ArrayList<Integer>();
-        // TODO : Initialiser tout le tableau de valeurs à -1
 
-        // Boucle principale
+        // main loop
         for (var vertex = v0; vertex < numberOfVertices; vertex++) {
-            DFS_Rec(graph, vertex, visited, parcours, new int[numberOfVertices][TIMES_VERTEX], new LongAdder()); // chaque case du tableau est un tableau de 2 cases (pour les temps)
+            DFS_Rec(graph, vertex, visited, parcours, new int[numberOfVertices][TIMES_VERTEX], new LongAdder()); // Each array is an array of 2 boxes (for time)
         }
         for (var vertex = 0; vertex < v0; vertex++) {
             DFS_Rec(graph, vertex, visited, parcours, new int[numberOfVertices][TIMES_VERTEX], new LongAdder());
@@ -62,45 +62,45 @@ public class Graphs {
 
 
     /**
-     * Logique du parcours en largeur d'un graph
+     * Logic of the BFS
      *
-     * @param graph    Un graph quelconque
-     * @param parcours Liste du parcours
-     * @param visited  Liste  boolean des sommets parcourus ou non
-     * @param queue    File
-     * @param vertice  sommet
+     * @param graph    any graph
+     * @param parcours list containing visited vertices
+     * @param visited  Boolean List of visited or Non-Visited vertices
+     * @param queue    queue
+     * @param vertice  vertex
      */
     private static void doBFS(Graph graph, ArrayList<Integer> parcours, boolean[] visited, ArrayDeque<Integer> queue, int vertice) {
-        queue.offer(vertice); // Ajout du sommet à la fin de la file (il fait la queue...)
-        while (!queue.isEmpty()) { // Tant que la file n'est pas vide
-            var vertex = queue.poll(); // On enlève le sommet en tête de file
-            if (!visited[vertex]) { // Si le tableau des booleans ne contient pas le sommet à l'index (false)
-                visited[vertex] = true; // Le sommet est visité
-                parcours.add(vertex); // Ajout à la liste parcours du sommet visité
-                graph.forEachEdge(vertex, edge -> queue.offer(edge.getEnd())); // Pour chaque arrêt du sommet on ajout le sommet au bout de l'arrêt à la file
+        queue.offer(vertice); // Added the top at the end of the queue (it's queuing..)
+        while (!queue.isEmpty()) { // As long as the queue is not empty
+            var vertex = queue.poll(); // We take the top out of queue
+            if (!visited[vertex]) { // If the booleans array does not contain the top at the index (false)
+                visited[vertex] = true; // vertex is visited
+                parcours.add(vertex); // Adding to the path list of the visited vertices
+                graph.forEachEdge(vertex, edge -> queue.offer(edge.getEnd())); // For each stop of the vertex one adds the vertex at the end of the stop to the queue
             }
         }
     }
 
     /**
-     * Parcours en largeur d'un graph
+     * BFS method
      *
-     * @param graph graph quelconque
+     * @param graph any graph
      * @param v0    sommet initial
-     * @return liste du parcours
+     * @return path list
      */
     public static List<Integer> BFS(Graph graph, int v0) {
-        var numberOfVertices = graph.numberOfVertices(); // bumber of vertices (graph)
+        var numberOfVertices = graph.numberOfVertices(); // number of vertices (graph)
         var queue = new ArrayDeque<Integer>(numberOfVertices); // queue
-        var parcours = new ArrayList<Integer>(); // Liste parcorus avec les sommets visité
+        var parcours = new ArrayList<Integer>(); // path list
         var visited = new boolean[numberOfVertices]; // Tableau de  boolean pour indiquer  les sommets visités
 
         var vertex = v0;
-        while (vertex < numberOfVertices) { // Tant que le sommet est inférieur au nombre total de sommet
+        while (vertex < numberOfVertices) { // As long as the top is less than the total number of top
             doBFS(graph, parcours, visited, queue, vertex);
             vertex++;
         }
-        while (vertex < v0) { // Tant que le sommet est inférieur au sommet initial (parcours non terminé)
+        while (vertex < v0) { // As long as the top is lower than the initial vertex (path not completed)
             doBFS(graph, parcours, visited, queue, vertex);
             vertex++;
         }
@@ -109,15 +109,15 @@ public class Graphs {
 
 
     /**
-     * Crée et retourne un graph aléatoire avec un nombre de sommets ert d'arêtes déinies en paramétres
+     * Creates and returns a random graph with a number of green vertices defined in parameters
      *
-     * @param numberOfVertices nombre de sommets
-     * @param numberOfEdges    nombre d'arrêtes
-     * @param weightMax        poids maximal
-     * @return un graph aléatoire
+     * @param numberOfVertices number of vertices
+     * @param numberOfEdges    number of edges
+     * @param weightMax        max. weight
+     * @return random graph
      */
     public static Graph createRandomGraph(int numberOfVertices, int numberOfEdges, int weightMax) {
-        if (numberOfEdges > numberOfVertices + numberOfVertices) { // Si le nombre d'arrêtes est deux fois supérieur au nombre de sommets
+        if (numberOfEdges > numberOfVertices + numberOfVertices) { // If the number of edges is twice the number of vertices
             throw new IllegalArgumentException(" Number of edges invalid");
         }
         var graph = new MatGraph(numberOfVertices);
@@ -137,10 +137,10 @@ public class Graphs {
 
 
     /**
-     * Crée et retourne un graph à partir d'un fichier
+     * Creates and returns a graph from a file
      *
-     * @param path chemin vers le fichier
-     * @return un graph issue d'un fichier
+     * @param path path to file
+     * @return a graph from a file
      */
     public static Graph createGraphFromMatrixFile(Path path) throws IOException {
         var lines = Files.readAllLines(path); // read the lines of the file
@@ -149,11 +149,11 @@ public class Graphs {
 
         var arcs = graph
                 .stream()
-                // chaque ligne devient une liste splitée
+                // each row becomes a splited list
                 .map(line -> Arrays
                         .asList(line.split(" "))
                         .stream()
-                        // chaque element de la liste converti en int
+                        // each element 
                         .map(Integer::parseInt)
                         // converti en liste
                         .collect(Collectors.toList()))
@@ -367,7 +367,7 @@ public class Graphs {
                     pi[s][t] = -1;
                 } else if (g.isEdge(s, t)) {
                     d[s][t] = g.getWeight(s, t);
-                    pi[s][t] = -1;
+                    pi[s][t] = s;
                 } else {
                     d[s][t] = PLUS_INFINITE;
                     pi[s][t] = -1;
