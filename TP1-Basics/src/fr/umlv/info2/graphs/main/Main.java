@@ -78,7 +78,7 @@ public class Main {
         matGraph.addEdge(1, 3, 1);
 
         System.out.println(Graphs.topologicalSort(matGraph, false));
-        */
+
         var adjGraph = new AdjGraph(10);
 
         adjGraph.addEdge(0, 1, 1);
@@ -88,16 +88,24 @@ public class Main {
         adjGraph.addEdge(3, 8, 2);
 
         System.out.println(Graphs.dijkstra(adjGraph, 0));
+        */
+
+        MatGraph matG2 = new MatGraph(5);
+        matG2.addEdge(0, 1, 3);
+        matG2.addEdge(0, 3, 7);
+        matG2.addEdge(0, 4, 12);
+        matG2.addEdge(1, 0, 3);
+        matG2.addEdge(1, 2, 1);
+        matG2.addEdge(2, 1, 1);
+        matG2.addEdge(2, 3, 2);
+        matG2.addEdge(3, 0, 7);
+        matG2.addEdge(3, 2, 2);
+        matG2.addEdge(3, 4, 5);
+        matG2.addEdge(4, 0, 12);
+        matG2.addEdge(4, 3, 5);
+
+        System.out.println(Graphs.floydWarshall(matG2));
 
 
-        var matGraph = new MatGraph(4);
-        matGraph.addEdge(0, 1, 8);
-        matGraph.addEdge(1, 2, 1);
-        matGraph.addEdge(2, 0, 4);
-        matGraph.addEdge(2, 1, 5);
-        matGraph.addEdge(3, 1, 2);
-        matGraph.addEdge(3, 2, 9);
-
-        System.out.println(Graphs.floydWarshall(matGraph));
     }
 }

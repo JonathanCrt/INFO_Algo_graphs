@@ -1,11 +1,13 @@
 package fr.umlv.info2.graphs.test;
 
-import fr.umlv.info2.graphs.AdjGraph;
-import fr.umlv.info2.graphs.Graphs;
-import fr.umlv.info2.graphs.MatGraph;
-import fr.umlv.info2.graphs.ShortestPathFromOneVertex;
+import fr.umlv.info2.graphs.*;
 import org.junit.jupiter.api.Test;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 
@@ -72,6 +74,33 @@ public class GraphsPathTest {
         matGraph.addEdge(4, 4, 5);
         assertEquals(List.of(3, 0, 4), Graphs.BFS(matGraph, 3));
     }
+
+
+    @Test
+    public void testCreateRandomGraph() {
+        var graph = Graphs.createRandomGraph(2, 1, 5);
+        assertEquals(2, graph.numberOfVertices());
+        assertEquals(1, graph.numberOfEdges());
+    }
+
+
+    @Test
+    public void testCreateGraphFromMatrixFile() throws IOException {
+        var matrixFile = File.createTempFile("mat", ".mat");
+        var path = Path.of(matrixFile.getAbsolutePath());
+        String fileContent =
+                "7" + "\n" +
+                "0 1 1 0" + "\n" +
+                "0 0 0 0" + "\n" +
+                "0 1 0 1" + "\n" +
+                "0 1 0 0" + "\n";
+        Files.write(path, fileContent.getBytes());
+        var g = Graphs.createGraphFromMatrixFile(Paths.get(matrixFile.getAbsolutePath()));
+        assertEquals(g.numberOfEdges(), 5);
+        assertEquals(g.numberOfVertices(), 7);
+        assertNotNull(g);
+    }
+
 
 
     @Test
@@ -192,8 +221,37 @@ public class GraphsPathTest {
         assertEquals("0 [0, 2, 3, 7, 5] [0, 0, 1, 2, 2]", Graphs.bellmanFord(matGraph, 0).toString());
     }
 
-    // dont't forget to test negative circle
+    @Test
+    public void testBellmanFord2() {
 
+        var matGraph = new MatGraph(5);
+        matGraph.addEdge(0, 1, 2); // A -> B : 2
+        matGraph.addEdge(0, 2, -1); // A -> C : -1
+        matGraph.addEdge(1, 3, 3); // B -> D : 3
+        matGraph.addEdge(1, 2, 1); // B -> C : 1
+        matGraph.addEdge(2, 4, 2); // C -> E : 2
+        matGraph.addEdge(4, 1, 0); // E -> B : 0
+        matGraph.addEdge(3, 4, 6); // D -> E : 1
+
+        assertEquals("0 [0, 2, -1, 5, 1] [0, 0, 0, 1, 2]", Graphs.bellmanFord(matGraph, 0).toString());
+    }
+
+
+    @Test
+    public void testBellmanFordWithNegativeCircle() {
+
+        var matGraph = new MatGraph(5);
+        matGraph.addEdge(0, 1, 2);
+        matGraph.addEdge(0, 2, 5);
+        matGraph.addEdge(1, 2, 1);
+        matGraph.addEdge(2, 1, -8);
+        matGraph.addEdge(1, 4, 4);
+        matGraph.addEdge(2, 3, 4);
+        matGraph.addEdge(2, 4, 2);
+        matGraph.addEdge(3, 2, 2);
+
+        assertThrows(IllegalArgumentException.class, () -> Graphs.bellmanFord(matGraph, 0));
+    }
 
     @Test
     public void testDijkstra() {
@@ -210,20 +268,53 @@ public class GraphsPathTest {
         assertEquals("0 [0, 7, 2, 10, 4] [null, 2, 0, 1, 2]", Graphs.dijkstra(matGraph, 0).toString());
     }
 
+    @Test
+    public void testDijkstra2() {
+
+        var matGraph = new MatGraph(5);
+        matGraph.addEdge(0, 1, 2); // A -> B : 2
+        matGraph.addEdge(0, 2, 5); // A -> C : 5
+        matGraph.addEdge(1, 3, 1); // B -> D : 1
+        matGraph.addEdge(1, 2, 2); // B -> C : 2
+        matGraph.addEdge(2, 4, 2); // C -> E : 2
+        matGraph.addEdge(4, 1, 1); // E -> B : 1
+        matGraph.addEdge(3, 4, 6); // D -> E : 6
+
+        assertEquals("0 [0, 2, 4, 3, 6] [null, 0, 1, 1, 2]", Graphs.dijkstra(matGraph, 0).toString());
+    }
+
 
     @Test
     public void testFloydWarshall() {
-        var matGraph = new MatGraph(4);
-        matGraph.addEdge(0, 1, 8);
+        MatGraph matGraph = new MatGraph(5);
+        matGraph.addEdge(0, 1, 3);
+        matGraph.addEdge(0, 3, 7);
+        matGraph.addEdge(0, 4, 12);
+        matGraph.addEdge(1, 0, 3);
         matGraph.addEdge(1, 2, 1);
-        matGraph.addEdge(2, 0, 4);
-        matGraph.addEdge(2, 1, 5);
-        matGraph.addEdge(3, 1, 2);
-        matGraph.addEdge(3, 2, 9);
+        matGraph.addEdge(2, 1, 1);
+        matGraph.addEdge(2, 3, 2);
+        matGraph.addEdge(3, 0, 7);
+        matGraph.addEdge(3, 2, 2);
+        matGraph.addEdge(3, 4, 5);
+        matGraph.addEdge(4, 0, 12);
+        matGraph.addEdge(4, 3, 5);
 
-        assertEquals("[0, 3, 4, 1] [5, 0, 1, 6] [4, 7, 0, 5] [7, 2, 3, 0]"+
-                " [0, 3, 3, 0] [2, 1, 1, 2] [2, 3, 2, 0] [2, 3, 2, 3]",
-                Graphs.floydWarshall(matGraph).toString());
+        int[][] d = {
+                {0, 3, 4, 6, 11},
+                {3, 0, 1, 3, 8},
+                {4, 1, 0, 2, 7},
+                {6, 3, 2, 0, 5},
+                {11, 8, 7, 5, 0}
+        };
+        int[][] pi = {
+                {-1, 0, 1, 2, 3},
+                {1, -1, 1, 2, 3},
+                {1, 2, -1, 2, 3},
+                {1, 2, 3, -1, 3},
+                {1, 2, 3, 4, -1}
+        };
+        assertEquals(new ShortestPathFromAllVertices(d, pi).toString(), Graphs.floydWarshall(matGraph).toString());
     }
 
 }

@@ -46,13 +46,14 @@ public class Graphs {
      * improvement : initialize all values of vertices array with -1
      */
     public static List<Integer> DFS(Graph graph, int v0) {
-        var numberOfVertices = graph.numberOfVertices();
-        var visited = new boolean[numberOfVertices];
-        var parcours = new ArrayList<Integer>();
+        var numberOfVertices = graph.numberOfVertices(); // get number of vertices of graph
+        var visited = new boolean[numberOfVertices]; // array of boolean to indicate visited vertices
+        var parcours = new ArrayList<Integer>(); // list containing visited vertices
 
         // main loop
         for (var vertex = v0; vertex < numberOfVertices; vertex++) {
-            DFS_Rec(graph, vertex, visited, parcours, new int[numberOfVertices][TIMES_VERTEX], new LongAdder()); // Each array is an array of 2 boxes (for time)
+            // Each array is an array of 2 boxes (for time)
+            DFS_Rec(graph, vertex, visited, parcours, new int[numberOfVertices][TIMES_VERTEX], new LongAdder());
         }
         for (var vertex = 0; vertex < v0; vertex++) {
             DFS_Rec(graph, vertex, visited, parcours, new int[numberOfVertices][TIMES_VERTEX], new LongAdder());
@@ -93,14 +94,14 @@ public class Graphs {
         var numberOfVertices = graph.numberOfVertices(); // number of vertices (graph)
         var queue = new ArrayDeque<Integer>(numberOfVertices); // queue
         var parcours = new ArrayList<Integer>(); // path list
-        var visited = new boolean[numberOfVertices]; // Tableau de  boolean pour indiquer  les sommets visités
+        var visited = new boolean[numberOfVertices]; //Table of boolean to indicate visited vertices
 
         var vertex = v0;
-        while (vertex < numberOfVertices) { // As long as the top is less than the total number of top
+        while (vertex < numberOfVertices) { // As long as the vertex is less than the total number of top
             doBFS(graph, parcours, visited, queue, vertex);
             vertex++;
         }
-        while (vertex < v0) { // As long as the top is lower than the initial vertex (path not completed)
+        while (vertex < v0) { // As long as the vertexis lower than the initial vertex (path not completed)
             doBFS(graph, parcours, visited, queue, vertex);
             vertex++;
         }
@@ -109,7 +110,7 @@ public class Graphs {
 
 
     /**
-     * Creates and returns a random graph with a number of green vertices defined in parameters
+     * Creates and returns a random graph with a number of edges, vertices defined in parameters
      *
      * @param numberOfVertices number of vertices
      * @param numberOfEdges    number of edges
@@ -117,21 +118,24 @@ public class Graphs {
      * @return random graph
      */
     public static Graph createRandomGraph(int numberOfVertices, int numberOfEdges, int weightMax) {
-        if (numberOfEdges > numberOfVertices + numberOfVertices) { // If the number of edges is twice the number of vertices
-            throw new IllegalArgumentException(" Number of edges invalid");
+        if (numberOfVertices + numberOfVertices < numberOfEdges) { // If the number of edges is twice the number of vertices
+            throw new IllegalArgumentException("Error: number of edges invalid");
         }
         var graph = new MatGraph(numberOfVertices);
         var rand = new Random();
 
-        for (var i = 0; i < numberOfEdges; i++)
+        var i = 0;
+        while( i < numberOfEdges) {
             try {
-                var randSrc = rand.nextInt(numberOfVertices);
-                var randDst = rand.nextInt(numberOfVertices);
-                var randWeight = rand.nextInt(weightMax + weightMax + 1) - weightMax;
-                graph.addEdge(randSrc, randDst, randWeight);
+                var randSrc = rand.nextInt(numberOfVertices); // create random source
+                var randDst = rand.nextInt(numberOfVertices); // create random destination
+                var randWeight = rand.nextInt(weightMax + weightMax + 1) - weightMax; // create random weight
+                graph.addEdge(randSrc, randDst, randWeight);  // add randome dge to graph
             } catch (IllegalArgumentException e) {
                 i--;
             }
+            i++;
+        }
         return graph;
     }
 
@@ -147,43 +151,47 @@ public class Graphs {
         var vertices = Integer.parseInt(lines.get(0)); // get the number of vertices
         var graph = lines.subList(1, lines.size()); // get the matrix that represents the graph
 
-        var arcs = graph
+        var edges = graph
                 .stream()
                 // each row becomes a splited list
-                .map(line -> Arrays
-                        .asList(line.split(" "))
-                        .stream()
-                        // each element 
+                .map(line -> Arrays.stream(line.split(" "))
+                        // each element
                         .map(Integer::parseInt)
-                        // converti en liste
+                        // parse to list
                         .collect(Collectors.toList()))
                 .collect(Collectors.toList());
 
-        var g = new MatGraph(vertices);
-        for (var i = 0; i < arcs.size(); i++) {
-            var l = arcs.get(i);
-            for (var j = 0; j < l.size(); j++) {
-                var ll = l.get(j);
-                if (ll != 0)
-                    g.addEdge(i, j, ll);
+        var matGraph = new MatGraph(vertices);
+        var i = 0;
+        while(i < edges.size()) {
+            var edgeList = edges.get(i);
+            for (var j = 0; j < edgeList.size(); j++) {
+                var weight = edgeList.get(j);
+                if (weight != 0) {
+                    matGraph.addEdge(i, j, weight);
+                }
             }
+            i++;
         }
-        return g;
+        return matGraph;
     }
 
     /**
-     * Méthode permettant le parcours en profondeur 'timé'
+     * DFS timed version
      *
-     * @param graph Un graphe orienté
-     * @param v0    sommet initial
-     * @return Tableau contenant les sommets (index) et les temps de début de visite et de fin.
+     * @param graph any oriented graph
+     * @param v0    initial vertex
+     * @return An array of values containing the vertex number and its start and end time.
      */
     public static int[][] timedDepthFirstSearch(Graph graph, int v0) {
-        var numberOfVertices = graph.numberOfVertices();
+        var numberOfVertices = graph.numberOfVertices(); // get number of vertices of graph
         var visited = new boolean[numberOfVertices];
+
+        // Create an array of values containing the vertex number and its start and end time.
         var arrayOfVerticesTimed = new int[numberOfVertices][TIMES_VERTEX];
         var currentTimeStep = new LongAdder(); // to make sure thread safe
         currentTimeStep.decrement();
+        // do DFS on graph
         for (var vertex = v0; vertex < numberOfVertices; vertex++) {
             DFS_Rec(graph, vertex, visited, new LinkedList<>(), arrayOfVerticesTimed, currentTimeStep);
         }
@@ -200,12 +208,20 @@ public class Graphs {
     }
      */
 
+    /**
+     * Main topological sort method with detection of negative circle
+     *
+     * @param g           any graph
+     * @param cycleDetect to active detection of negative circle or not
+     * @return An array containing result(vertices) of topological sort
+     */
     public static List<Integer> topologicalSort(Graph g, boolean cycleDetect) {
         var numberOfVertices = g.numberOfVertices();
         var visited = new boolean[numberOfVertices];
 
-        var parcours = new Stack<Integer>();
+        var parcours = new Stack<Integer>(); // to find a vertex with no requirements and remove it
 
+        // for each vertex of graph do
         for (var vertex = 0; vertex < numberOfVertices; vertex++) {
             if (!visited[vertex]) {
                 topologicalSortRec(g, vertex, visited, parcours, new ArrayList<>(), cycleDetect);
@@ -222,15 +238,20 @@ public class Graphs {
 
 
     /**
-     * @param g
-     * @param vertex
-     * @param visited
-     * @param parcours
+     * recursive topological sort method
+     *
+     * @param g                 any graph
+     * @param vertex            given vertex
+     * @param visited           boolean List of visited or Non-Visited vertices
+     * @param parcours          process
+     * @param ancestorsVertices list of ancetors
+     * @param cycleDetect       detection of negative circle
      */
     public static void topologicalSortRec(Graph g, int vertex, boolean[] visited, Stack<Integer> parcours, List<Integer> ancestorsVertices, boolean cycleDetect) {
         visited[vertex] = true;
         ancestorsVertices.add(vertex);
 
+        // for each vertex of g do
         g.forEachEdge(vertex, v -> {
             if (!visited[v.getEnd()]) {
                 topologicalSortRec(g, v.getEnd(), visited, parcours, ancestorsVertices, cycleDetect);
@@ -249,22 +270,25 @@ public class Graphs {
     }
 
     /**
-     * implementation de l'algorithme de kosaraju
+     * kosaraju method
      *
-     * @param g graph donné
-     * @return Composantes fortement connexe
+     * @param g any graph
+     * @return strongly connected component
      */
     public static List<List<Integer>> scc(Graph g) {
-        var kosarajuParcours = new ArrayList<List<Integer>>();
+        var kosarajuParcours = new ArrayList<List<Integer>>(); // to store result sets
 
+        // do topological sort to create list with ordered vertices (by decreasing dates)
         var vertices = topologicalSort(g, false);
         var numberOfVertices = vertices.size();
-        var transposedGraph = g.transpose();
-        var visited = new boolean[numberOfVertices];
+        var transposedGraph = g.transpose(); // calculate transposed graph (inverse directions of edges)
+        var visited = new boolean[numberOfVertices]; // array of visited vertices
 
+        // main loop
         for (var vertex : vertices) {
             if (!visited[vertex]) {
                 var secondParcours = new ArrayList<Integer>();
+                // call DFS recursive method with transposed graph
                 DFS_Rec(transposedGraph, vertex, visited, secondParcours, new int[numberOfVertices][TIMES_VERTEX], new LongAdder());
                 kosarajuParcours.add(secondParcours);
             }
@@ -273,17 +297,18 @@ public class Graphs {
     }
 
     /**
-     * implementation de l'algorithme de bellman-ford
+     * bellman-ford method
      *
-     * @param g      graph donnée
-     * @param source sommet de départ
-     * @return plus court chemin depuis le sommet de départ
+     * @param g      any graph
+     * @param source source vertex
+     * @return shortest path from the starting vertex
      */
     public static ShortestPathFromOneVertex bellmanFord(Graph g, int source) {
-        var d = new int[g.numberOfVertices()];
-        var pi = new Integer[g.numberOfVertices()];
-        var numberOfVertices = g.numberOfVertices();
+        var d = new int[g.numberOfVertices()]; // to store all distances
+        var pi = new Integer[g.numberOfVertices()]; // to store all predecessors
+        var numberOfVertices = g.numberOfVertices(); // to get number of vertices of graph
 
+        // initialization
         for (var index = 0; index < numberOfVertices; index++) {
             d[index] = PLUS_INFINITE;
             pi[index] = PLUS_INFINITE;
@@ -291,12 +316,13 @@ public class Graphs {
         d[source] = 0;
         pi[source] = source;
 
+        // we search a more effective path length
         for (var i = 0; i < numberOfVertices; i++) {
             for (var vertex = 0; vertex < numberOfVertices; vertex++) {
                 g.forEachEdge(vertex, edge -> {
                     var weight = edge.getValue();
                     var target = edge.getEnd();
-
+                    // to find a better path
                     if (d[target] > d[edge.getStart()] + weight) {
                         d[target] = d[edge.getStart()] + weight;
                         pi[target] = edge.getStart();
@@ -304,10 +330,12 @@ public class Graphs {
                 });
             }
         }
+
+        // to detect negative circle
         for (var vertex = 0; vertex < g.numberOfVertices(); vertex++) {
             g.forEachEdge(vertex, edge -> {
-                var weight = edge.getValue();
-                var target = edge.getEnd();
+                var weight = edge.getValue(); // get weight of edge
+                var target = edge.getEnd(); // get vertex at the end of edge
                 if (d[target] > d[edge.getStart()] + weight) {
                     throw new IllegalArgumentException("Error: Graph given have negative circle");
                 }
@@ -318,18 +346,18 @@ public class Graphs {
     }
 
     /**
-     * implementation de l'algorithme de dijktra
+     * dijktra method
      *
-     * @param g      graph donnée
-     * @param source sommet de départ
-     * @return plus court chemin depuis le sommet de départ
+     * @param g      any graph
+     * @param source source vertex
+     * @return shortest path from the starting vertex
      */
     public static ShortestPathFromOneVertex dijkstra(Graph g, int source) {
 
-        var numberOfVertices = g.numberOfVertices();
-        var d = new int[numberOfVertices];
-        var pi = new Integer[numberOfVertices];
-        var todoVertices = new PriorityQueue<Integer>();
+        var numberOfVertices = g.numberOfVertices(); // to get number of vertices of graph
+        var d = new int[numberOfVertices]; // to store all distances
+        var pi = new Integer[numberOfVertices]; // to store all predecessors
+        var todoVertices = new PriorityQueue<Integer>(); // todoset of vertices to be processed
 
         // intialization of d and pi for each vertices
         for (var s = 0; s < numberOfVertices; s++) {
@@ -340,53 +368,68 @@ public class Graphs {
         d[source] = 0;
         while (!todoVertices.isEmpty()) {
 
-            var s = todoVertices.poll();
+            var s = todoVertices.poll(); // extract of todoVertices that which minimizes d
+            // for each edge from source to target do
             g.forEachEdge(s, edge ->
             {
-                var target = edge.getEnd();
-                var weight = edge.getValue();
+                var target = edge.getEnd(); // get vertex at the end of edge
+                var weight = edge.getValue(); // get weight of edge
+                //  to find a better path
                 if (d[s] + weight < d[target]) {
                     d[target] = d[s] + weight;
                     pi[target] = s;
                 }
             });
         }
-        return new ShortestPathFromOneVertex(source, d, pi);
+        return new ShortestPathFromOneVertex(source, d, pi); // return shortest path
     }
 
-
+    /**
+     * floyd-Warshall method
+     *
+     * @param g any graph
+     * @return shortest path from the starting vertex
+     */
     public static ShortestPathFromAllVertices floydWarshall(Graph g) {
-        var numberOfVertices = g.numberOfVertices();
-        var d = new int[numberOfVertices][numberOfVertices];
-        var pi = new int[numberOfVertices][numberOfVertices];
+        var numberOfVertices = g.numberOfVertices(); // to get number of vertices of graph
+        var d = new int[numberOfVertices][numberOfVertices]; // d matrix of weights of all shortest paths
+        var pi = new int[numberOfVertices][numberOfVertices]; // pi matrix of predecessors
 
+        // initialization
         for (var s = 0; s < numberOfVertices; s++) {
             for (var t = 0; t < numberOfVertices; t++) {
-                if (s == t & g.isEdge(s, t)) {
+                if (s == t) {
                     d[s][t] = 0;
-                    pi[s][t] = -1;
-                } else if (g.isEdge(s, t)) {
-                    d[s][t] = g.getWeight(s, t);
-                    pi[s][t] = s;
                 } else {
-                    d[s][t] = PLUS_INFINITE;
-                    pi[s][t] = -1;
-                }
+                    d[s][t] = 1_000_000; // "equivalent" to plus infinity
 
+                }
+                pi[s][t] = -1;
+            }
+        }
+        // for s to t  of g do
+        for (int s = 0; s < numberOfVertices; s++) {
+            for (int t = 0; t < numberOfVertices; t++) {
+                if (g.isEdge(s, t)) {
+                    if (s != t) {
+                        d[s][t] = g.getWeight(s, t); // weight = weight of edge from s to t
+                        pi[s][t] = s; // predecessor = source
+                    }
+                }
             }
         }
 
+        // main loop : paths with intermediate vertices < k + 1 is calculated
         for (var k = 0; k < numberOfVertices - 1; k++) {
             for (var s = 0; s < numberOfVertices; s++) {
                 for (var t = 0; t < numberOfVertices; t++) {
                     if (d[s][t] > d[s][k] + d[k][t]) {
-                        d[s][t] = d[s][k] + d[k][t];
+                        d[s][t] = d[s][k] + d[k][t]; // actual weight of shortest path from s to t
                         pi[s][t] = pi[k][t];
                     }
                 }
             }
         }
-        return new ShortestPathFromAllVertices(d, pi);
-
+        return new ShortestPathFromAllVertices(d, pi); // return shortest path
     }
 }

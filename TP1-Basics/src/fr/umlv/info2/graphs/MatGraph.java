@@ -46,10 +46,6 @@ public class MatGraph implements Graph {
     @Override
     public void addEdge(int i, int j, int weight) {
         this.checkEdge(i, j);
-        Objects.requireNonNull(weight);
-//        if (weight <= 0) {
-//            throw new IllegalArgumentException();
-//        }
         this.mat[i][j] = weight;
     }
 

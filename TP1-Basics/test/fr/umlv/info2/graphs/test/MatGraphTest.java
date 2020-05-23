@@ -12,7 +12,7 @@ public class MatGraphTest {
 
     @Test
     public void testCreateMatGraph () {
-        var graph = new MatGraph(50);
+        new MatGraph(50);
     }
 
     @Test
@@ -49,18 +49,6 @@ public class MatGraphTest {
     }
 
     @Test
-    public void testAddEdgeInvalidWeight() {
-        var matGraph = new MatGraph(7);
-        assertThrows(IllegalArgumentException.class, () -> matGraph.addEdge(3, 4, -2));
-    }
-
-    @Test
-    public void testAddEdgeZeroWeight() {
-        var graph = new MatGraph(7);
-        assertThrows(IllegalArgumentException.class, () -> graph.addEdge(3, 4, 0));
-    }
-
-    @Test
     public void testAddEdgeTwice() {
         var graph = new MatGraph(7);
         graph.addEdge(3, 4, 5);
@@ -86,7 +74,7 @@ public class MatGraphTest {
         var matGraph = new MatGraph(20);
         for (var i = 0; i < numberOfVertices; i++) {
             for (var j = 0; j < numberOfVertices; j++) {
-                assertTrue(matGraph.getWeight(i, j) == 0);
+                assertEquals(0, matGraph.getWeight(i, j));
             }
         }
     }

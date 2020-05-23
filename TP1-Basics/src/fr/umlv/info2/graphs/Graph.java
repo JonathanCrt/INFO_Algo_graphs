@@ -6,66 +6,66 @@ import java.util.function.Consumer;
 public interface Graph {
 
     /**
-     * Retourne le nombre d'arêtes du graph
+     * Returns the number of edges in the graph
      *
-     * @return le nombre d'arêtes du graph
+     * @return the number of edges on the graph
      */
     int numberOfEdges();
 
     /**
-     * Retourne le nombre de sommets du graph
+     * Returns the number of vertices in the graph
      *
-     * @return le nombre de sommets du graph
+     * @return the number of vertices on the graph
      */
     int numberOfVertices();
 
     /**
-     * Permet d'ajouter une arête orientée au graph
+     * Adds an edge oriented to the graph
      *
-     * @param i     la 1ère extremité de l'arête
-     * @param j     la 2ème extremité de l'arête
-     * @param value le poids de l'arête
+     * @param i     the 1st end of the edge
+     * @param j     the 2nds end of the edge
+     * @param value the weight of edge
      */
     void addEdge(int i, int j, int value);
 
     /**
-     * Teste l'existence d'une arête donnée
+     * Tests the existence of a given edge
      *
-     * @param i la 1ère extremité de l'arête
-     * @param j la 2ème extremité de l'arête
-     * @return true s'il existe une arête entre i et j; false sinon
+     * @param i the 1st end of the edge
+     * @param j the 2nds end of the edge
+     * @return true if there is an edge between i and j false otherwise
      */
     boolean isEdge(int i, int j);
 
     /**
-     * Retourne le poids d'une arête donné
+     * Returns the weight of a given edge
      *
-     * @param i la 1ère extremité de l'arête
-     * @param j la 2ème extremité de l'arête
-     * @return Le poids de l'arête entre i et j
+     * @param i the 1st end of the edge
+     * @param j the 2nds end of the edge
+     * @return the weight of the edge between i and j
      */
     int getWeight(int i, int j);
 
     /**
-     * Renvoie un itérateur sur tous les voisins d'un sommet donné.
+     * Returns an iterator on all neighbors of a given vertex.
      *
-     * @param i le sommet à partir duquel partent les arêtes fournies par l'itérateur
-     * @return un itérateur sur tous les voisins du sommet i
+     * @param i the vertex from which the edges provided by the iterator start
+     * @return an iterator on all of the vertex's neighbors i
      */
     Iterator<Edge> edgeIterator(int i);
 
     /**
-     * Effectue une action sur tous les arêtes d'un sommet donné.
+     * Performs an action on all edges of a given vertex.
      *
-     * @param i        le sommet à partir duquel partent les arêtes traitées
-     * @param consumer l'action effectuée sur toutes les arêtes voisines de i
+     * @param i        the vertex from which the processed edges start
+     * @param consumer the action performed on all edges adjacent to i
      */
     void forEachEdge(int i, Consumer<Edge> consumer);
 
     /**
-     * Affiche le graph
+     * display the graph
      *
-     * @return affichage du graph
+     * @return graph display (string)
      */
     default String toGraphviz() {
         var sb = new StringBuilder();
@@ -87,8 +87,9 @@ public interface Graph {
     }
 
     /**
-     * Inverse les arrêtes du graphe
-     * @return graph transposé
+     * Reverse the edges of the graph
+     *
+     * @return transposed graph
      */
     default Graph transpose() {
         var graph = this;
